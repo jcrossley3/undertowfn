@@ -2,10 +2,10 @@ package undertowfn;
 
 import com.fnproject.fn.runtime.EntryPoint;
 
-import io.undertow.*;
-import io.undertow.server.*;
-import io.undertow.server.handlers.*;
-import io.undertow.util.*;
+import io.undertow.Undertow;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+
 import java.util.*;
 
 public class Proxy {
@@ -18,7 +18,7 @@ public class Proxy {
 
         Undertow server = Undertow.builder()
             .addHttpListener(8080, "localhost")
-            .setHandler(new RequestDumpingHandler(new HttpHandler() {
+            .setHandler(new HttpHandler() {
                     @Override
                     public void handleRequest(final HttpServerExchange exchange) throws Exception {
                         if (exchange.isInIoThread()) {
@@ -28,7 +28,7 @@ public class Proxy {
                         exchange.startBlocking();
                         new EntryPoint().run(env, exchange.getInputStream(), exchange.getOutputStream(), System.err, args);
                     }
-                })).build();
+                }).build();
         server.start();
     }
 }
